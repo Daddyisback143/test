@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Login - TravelPlanner</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .login-container {
+      max-width: 400px;
+      margin: 3em auto;
+      background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+      border-radius: 16px;
+      box-shadow: 0 4px 24px #0077cc22;
+      padding: 2.5em 2em;
+      font-family: 'Poppins', Arial, sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
+    .login-container::before {
+      content: '';
+      position: absolute;
+      top: -40px; left: -40px; right: -40px; bottom: -40px;
+      background: radial-gradient(circle at 80% 20%, #0077cc33 0%, transparent 70%);
+      z-index: 0;
+    }
+    .login-container > * { position: relative; z-index: 1; }
+    .login-container h2 { color: #0077cc; margin-bottom: 1em; font-weight: 700; letter-spacing: 1px; }
+    .login-container input, .login-container button {
+      width: 100%;
+      padding: 0.8em;
+      margin-bottom: 1em;
+      border-radius: 8px;
+      border: 1px solid #e0eafc;
+      font-size: 1em;
+      box-shadow: 0 1px 4px #0077cc11;
+    }
+    .login-container button { background: linear-gradient(90deg, #0077cc 0%, #2193b0 100%); color: #fff; font-weight: 600; border: none; transition: background 0.2s; box-shadow: 0 2px 8px #0077cc22; }
+    .login-container button:hover { background: linear-gradient(90deg, #2193b0 0%, #0077cc 100%); }
+    .forgot-link { color: #2193b0; text-decoration: underline; cursor: pointer; font-size: 0.95em; }
+    .forgot-link:hover { color: #0077cc; }
+    #forgot-form { display: none; }
+    .success, .error {
+      display: flex;
+      align-items: center;
+      gap: 0.7em;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 0.8em 1em;
+      margin-top: 1em;
+      text-align: center;
+      font-size: 1.05em;
+      animation: fadeIn 0.5s;
+      box-shadow: 0 2px 8px #0077cc11;
+    }
+    .success { color: #28a745; background: #eafaf1; }
+    .error { color: #c0392b; background: #fdecea; }
+    .success .icon, .error .icon { font-size: 1.3em; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: none; } }
+    .spinner {
+      display: inline-block;
+      width: 28px;
+      height: 28px;
+      border: 3px solid #0077cc33;
+      border-top: 3px solid #0077cc;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    #toggle-password svg { transition: color 0.2s; }
+    #toggle-password.active svg { color: #0077cc; }
+    
+    /* Profile menu styles */
+    .profile-menu { display: none; }
+    .profile-dropdown li a:hover { background: #f5f5f5; }
+    .nav-toggler { display: none; }
+    @media (max-width: 768px) {
+      .nav-toggler { display: block; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Minimal Navbar for Login/Register -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">TravelPlanner</div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="login.html">Login</a></li>
+        <li><a href="register.html">Register</a></li>
+      </ul>
+    </nav>
+  </header>
+  <div class="login-container" id="auth">
+    <h2>Login to TravelPlanner</h2>
+    <form id="login-form" autocomplete="off">
+      <input name="username" id="login-username" placeholder="Username or Email" required autofocus>
+      <div style="position:relative;">
+        <input name="password" id="login-password" type="password" placeholder="Password" required style="padding-right:2.5em;" autocomplete="off">
+        <span id="toggle-password" style="position:absolute;right:0.8em;top:50%;transform:translateY(-50%);cursor:pointer;font-size:1.2em;color:#888;z-index:2;">
+          <svg id="eye-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        </span>
+      </div>
+      <button type="submit">Login</button>
+      <div id="login-loader" style="display:none;text-align:center;margin-bottom:1em;"><span class="spinner"></span></div>
+      <div style="text-align:right;">
+        <span class="forgot-link" onclick="document.getElementById('login-form').style.display='none';document.getElementById('forgot-form').style.display='block';">Forgot password?</span>
+      </div>
+      <div id="login-result"></div>
+    </form>
+    <form id="forgot-form">
+      <h3>Forgot Password</h3>
+      <input name="name" placeholder="Full Name" required>
+      <input name="username" placeholder="Username" required>
+      <input name="email" type="email" placeholder="Email" required>
+      <button type="submit">Request Reset</button>
+      <div style="text-align:right;">
+        <span class="forgot-link" onclick="document.getElementById('forgot-form').style.display='none';document.getElementById('login-form').style.display='block';">Back to login</span>
+      </div>
+      <div id="forgot-result"></div>
+    </form>
+  </div>
+  <script>
+    // Session check and UI update on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check session status first
+      fetch('php/session_status.php')
+        .then(res => res.json())
+        .then(data => {
+          console.log('Session status:', data);
+          if (data.logged_in) {
+            updateUIForLoggedInUser(data.username, data.user_type);
+          } else {
+            updateUIForLoggedOutUser();
+          }
+        })
+        .catch(err => {
+          console.error('Session check failed:', err);
+          updateUIForLoggedOutUser();
+        });
+    });
+
+    // UI update functions
+    function updateUIForLoggedInUser(username, userType) {
+      console.log('Updating UI for logged in user:', username, userType);
+      
+      // Hide login link, show profile menu
+      const loginLink = document.getElementById('login-link');
+      const profileMenu = document.querySelector('.profile-menu');
+      const welcomeUser = document.getElementById('welcome-user');
+      
+      if (loginLink) loginLink.style.display = 'none';
+      if (profileMenu) profileMenu.style.display = 'block';
+      if (welcomeUser) {
+        welcomeUser.textContent = `Welcome, ${username}!`;
+        welcomeUser.style.display = 'block';
+      }
+      
+      // Show success message if this is a fresh login
+      const loginResult = document.getElementById('login-result');
+      if (loginResult && !loginResult.innerHTML.includes('Welcome')) {
+        loginResult.innerHTML = `<div class='success'><span class='icon'>✅</span> Login successful, Welcome <b>${username}</b>!</div>`;
+      }
+    }
+
+    function updateUIForLoggedOutUser() {
+      console.log('Updating UI for logged out user');
+      
+      // Show login link, hide profile menu
+      const loginLink = document.getElementById('login-link');
+      const profileMenu = document.querySelector('.profile-menu');
+      const welcomeUser = document.getElementById('welcome-user');
+      
+      if (loginLink) loginLink.style.display = 'block';
+      if (profileMenu) profileMenu.style.display = 'none';
+      if (welcomeUser) welcomeUser.style.display = 'none';
+      
+      // Clear any login messages
+      const loginResult = document.getElementById('login-result');
+      if (loginResult) loginResult.innerHTML = '';
+    }
+
+    // Password toggle functionality
+    document.getElementById('toggle-password').onclick = function() {
+      const pw = document.getElementById('login-password');
+      const eye = document.getElementById('eye-icon');
+      if (pw.type === 'password') {
+        pw.type = 'text';
+        this.classList.add('active');
+      } else {
+        pw.type = 'password';
+        this.classList.remove('active');
+      }
+    };
+
+    // Profile menu toggle
+    document.addEventListener('click', function(e) {
+      const profileLink = document.getElementById('profile-link');
+      const profileDropdown = document.querySelector('.profile-dropdown');
+      
+      if (e.target === profileLink) {
+        e.preventDefault();
+        profileDropdown.style.display = profileDropdown.style.display === 'none' ? 'block' : 'none';
+      } else if (!profileDropdown.contains(e.target)) {
+        profileDropdown.style.display = 'none';
+      }
+    });
+
+    // Profile menu actions
+    document.getElementById('edit-profile-link').addEventListener('click', function(e) {
+      e.preventDefault();
+      alert('Edit Profile functionality coming soon!');
+    });
+
+    document.getElementById('logout-link').addEventListener('click', function(e) {
+      e.preventDefault();
+      console.log('Logout clicked');
+      
+      fetch('php/logout.php')
+        .then(res => res.json())
+        .then(data => {
+          console.log('Logout response:', data);
+          if (data.status === 'success') {
+            // Clear login messages
+            const loginResult = document.getElementById('login-result');
+            if (loginResult) loginResult.innerHTML = '';
+            
+            // Update UI for logged out user
+            updateUIForLoggedOutUser();
+            
+            // Redirect to home page
+            window.location.href = 'index.html';
+          }
+        })
+        .catch(err => {
+          console.error('Logout failed:', err);
+          // Still update UI and redirect
+          updateUIForLoggedOutUser();
+          window.location.href = 'index.html';
+        });
+    });
+
+    // Login form handling (same as main page)
+    document.addEventListener('DOMContentLoaded', function() {
+      const loginForm = document.getElementById('login-form');
+      const loginResult = document.getElementById('login-result');
+      
+      // Multiple event handlers to ensure login works
+      loginForm.addEventListener('submit', handleLogin);
+      loginForm.onsubmit = handleLogin;
+      
+      function handleLogin(e) {
+        e.preventDefault();
+        console.log('Login form submitted');
+        
+        const formData = new FormData(loginForm);
+        const loginLoader = document.getElementById('login-loader');
+        
+        // Show loader
+        if (loginLoader) loginLoader.style.display = 'block';
+        
+        fetch('php/login.php', {
+          method: 'POST',
+          body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+          console.log('Login response:', data);
+          
+          // Hide loader
+          if (loginLoader) loginLoader.style.display = 'none';
+          
+          if (data.status === 'success') {
+            loginResult.innerHTML = `<div class='success'><span class='icon'>✅</span> Login successful, Welcome <b>${data.username}</b>!</div>`;
+            
+            // Update UI immediately
+            updateUIForLoggedInUser(data.username, data.user_type);
+            
+            // Redirect after a short delay
+            setTimeout(() => {
+              if (data.user_type === 'admin') {
+                window.location.href = 'admin_dashboard.php';
+              } else {
+                window.location.href = 'index.html';
+              }
+            }, 1500);
+          } else {
+            loginResult.innerHTML = `<div class='error'><span class='icon'>❌</span> ${data.msg || 'Login failed.'}</div>`;
+          }
+        })
+        .catch(err => {
+          console.error('Login error:', err);
+          if (loginLoader) loginLoader.style.display = 'none';
+          loginResult.innerHTML = `<div class='error'><span class='icon'>❌</span> Login failed. Please try again.</div>`;
+        });
+      }
+    });
+
+    // Enter key submits form from any field
+    document.getElementById('login-form').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        this.dispatchEvent(new Event('submit', {cancelable:true}));
+      }
+    });
+
+    // Forgot password form
+    document.getElementById('forgot-form').onsubmit = function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      fetch('php/forgot_password.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('forgot-result').innerHTML = data.status === 'success' ? `<div class='success'>${data.msg}</div>` : `<div class='error'>${data.msg}</div>`;
+        if (data.status === 'success') setTimeout(() => { document.getElementById('forgot-form').style.display='none'; document.getElementById('login-form').style.display='block'; }, 2000);
+      })
+      .catch(() => { document.getElementById('forgot-result').innerHTML = `<div class='error'>Request failed. Try again.`; });
+    };
+  </script>
+  <script src="script.js"></script>
+</body>
+</html>

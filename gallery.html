@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery - TravelPlanner</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .gallery-container {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem;
+        }
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .gallery-item:hover {
+            transform: scale(1.02);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+        .gallery-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 1rem;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+        .gallery-item:hover .gallery-caption {
+            transform: translateY(0);
+        }
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+        }
+        .lightbox-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90vh;
+            margin: 2rem auto;
+        }
+        .lightbox-content img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        .lightbox-caption {
+            color: white;
+            text-align: center;
+            padding: 1rem;
+        }
+        .close-lightbox {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+        .gallery-filters {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            background: #f0f0f0;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .filter-btn.active {
+            background: #0077cc;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">TravelPlanner</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="destinations.html">Destinations</a></li>
+            <li><a href="packages.html">Packages</a></li>
+            <li><a href="gallery.html" class="active">Gallery</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+    </nav>
+
+    <div class="gallery-container">
+        <h1>Travel Gallery</h1>
+        <div class="gallery-filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="beach">Beaches</button>
+            <button class="filter-btn" data-filter="mountain">Mountains</button>
+            <button class="filter-btn" data-filter="city">Cities</button>
+            <button class="filter-btn" data-filter="culture">Culture</button>
+        </div>
+        <div class="gallery-grid" id="gallery-grid">
+            <!-- Gallery items will be dynamically added here -->
+        </div>
+        <button id="view-all-gallery" class="filter-btn" style="margin:2rem auto 0 auto;display:block;">View All Gallery</button>
+    </div>
+
+    <!-- Full Gallery Modal -->
+    <div class="lightbox" id="gallery-modal" style="display:none;">
+        <span class="close-lightbox" id="close-gallery-modal">&times;</span>
+        <div class="lightbox-content" style="max-width:700px;">
+            <img src="" alt="" id="gallery-modal-img" style="width:100%;border-radius:8px;">
+            <div class="lightbox-caption" id="gallery-modal-caption"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1em;">
+                <button id="gallery-prev" class="filter-btn">&larr; Prev</button>
+                <span id="gallery-count" style="color:white;"></span>
+                <button id="gallery-next" class="filter-btn">Next &rarr;</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Gallery data
+        const galleryItems = [
+            {
+                src: 'assets/gallery/goa-beach.jpg',
+                caption: 'Beautiful beaches of Goa',
+                category: 'beach'
+            },
+            {
+                src: 'assets/gallery/himalayas.jpg',
+                caption: 'Majestic Himalayas',
+                category: 'mountain'
+            },
+            {
+                src: 'assets/gallery/delhi.jpg',
+                caption: 'Historic Delhi',
+                category: 'city'
+            },
+            {
+                src: 'assets/gallery/varanasi.jpg',
+                caption: 'Spiritual Varanasi',
+                category: 'culture'
+            },
+            {
+                src: 'assets/gallery/andaman.jpg',
+                caption: 'Crystal clear waters of Andaman',
+                category: 'beach'
+            },
+            {
+                src: 'assets/gallery/rajasthan.jpg',
+                caption: 'Royal Rajasthan',
+                category: 'culture'
+            },
+            {
+                src: 'assets/gallery/mumbai.jpg',
+                caption: 'Vibrant Mumbai',
+                category: 'city'
+            },
+            {
+                src: 'assets/gallery/kerala.jpg',
+                caption: 'Serene Kerala backwaters',
+                category: 'culture'
+            },
+            {
+                src: 'assets/gallery/ladakh.jpg',
+                caption: 'Breathtaking Ladakh',
+                category: 'mountain'
+            }
+        ];
+
+        // Render gallery items
+        function renderGallery(items) {
+            const grid = document.getElementById('gallery-grid');
+            grid.innerHTML = items.map(item => `
+                <div class="gallery-item" data-category="${item.category}">
+                    <img src="${item.src}" alt="${item.caption}">
+                    <div class="gallery-caption">${item.caption}</div>
+                </div>
+            `).join('');
+
+            // Add click handlers
+            document.querySelectorAll('.gallery-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const img = item.querySelector('img');
+                    const caption = item.querySelector('.gallery-caption').textContent;
+                    openLightbox(img.src, caption);
+                });
+            });
+        }
+
+        // Filter functionality
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update active button
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const filter = btn.dataset.filter;
+                const filteredItems = filter === 'all' 
+                    ? galleryItems 
+                    : galleryItems.filter(item => item.category === filter);
+                renderGallery(filteredItems);
+            });
+        });
+
+        // Lightbox functionality
+        function openLightbox(src, caption) {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            const lightboxCaption = document.getElementById('lightbox-caption');
+
+            lightboxImg.src = src;
+            lightboxCaption.textContent = caption;
+            lightbox.style.display = 'block';
+        }
+
+        // Close lightbox
+        document.querySelector('.close-lightbox').addEventListener('click', () => {
+            document.getElementById('lightbox').style.display = 'none';
+        });
+
+        // Close lightbox on outside click
+        document.getElementById('lightbox').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('lightbox')) {
+                document.getElementById('lightbox').style.display = 'none';
+            }
+        });
+
+        // --- View All Gallery Modal Logic ---
+        let currentGalleryIndex = 0;
+        const galleryModal = document.getElementById('gallery-modal');
+        const galleryModalImg = document.getElementById('gallery-modal-img');
+        const galleryModalCaption = document.getElementById('gallery-modal-caption');
+        const galleryCount = document.getElementById('gallery-count');
+        const galleryPrev = document.getElementById('gallery-prev');
+        const galleryNext = document.getElementById('gallery-next');
+        const closeGalleryModal = document.getElementById('close-gallery-modal');
+        document.getElementById('view-all-gallery').addEventListener('click', function() {
+            currentGalleryIndex = 0;
+            showGalleryModal(currentGalleryIndex);
+            galleryModal.style.display = 'block';
+        });
+        function showGalleryModal(idx) {
+            const item = galleryItems[idx];
+            galleryModalImg.src = item.src;
+            galleryModalCaption.innerHTML = `<b>${item.caption}</b><br><span style='font-size:0.95em;color:#ccc;'>Category: ${item.category}</span>`;
+            galleryCount.textContent = `${idx + 1} / ${galleryItems.length}`;
+        }
+        galleryPrev.addEventListener('click', function() {
+            currentGalleryIndex = (currentGalleryIndex - 1 + galleryItems.length) % galleryItems.length;
+            showGalleryModal(currentGalleryIndex);
+        });
+        galleryNext.addEventListener('click', function() {
+            currentGalleryIndex = (currentGalleryIndex + 1) % galleryItems.length;
+            showGalleryModal(currentGalleryIndex);
+        });
+        closeGalleryModal.addEventListener('click', function() {
+            galleryModal.style.display = 'none';
+        });
+        galleryModal.addEventListener('click', function(e) {
+            if (e.target === galleryModal) galleryModal.style.display = 'none';
+        });
+
+        // Initial render
+        renderGallery(galleryItems);
+    </script>
+</body>
+</html>

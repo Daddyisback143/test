@@ -1,0 +1,25 @@
+[
+    {
+        "type": "flight",
+        "date": "2025-06-18",
+        "num_travelers": "1",
+        "source": "nanded",
+        "destination": "mumbai",
+        "fare": "3000",
+        "per_person": 3000,
+        "traveler_name_1": "Sarvesh",
+        "traveler_age_1": "21",
+        "traveler_gender_1": "male",
+        "ticket_no": "C379263F",
+        "transport_no": "Flight No: AI8016",
+        "travelers": [
+            {
+                "name": "Sarvesh",
+                "age": "21",
+                "gender": "male"
+            }
+        ],
+        "total_price": 3000,
+        "timestamp": "2025-06-16 21:36:50"
+    }
+]

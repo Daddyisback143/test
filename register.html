@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Register - TravelPlanner</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .register-container {
+      max-width: 400px;
+      margin: 3em auto;
+      background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+      border-radius: 16px;
+      box-shadow: 0 4px 24px #0077cc22;
+      padding: 2.5em 2em;
+      font-family: 'Poppins', Arial, sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
+    .register-container::before {
+      content: '';
+      position: absolute;
+      top: -40px; left: -40px; right: -40px; bottom: -40px;
+      background: radial-gradient(circle at 80% 20%, #0077cc33 0%, transparent 70%);
+      z-index: 0;
+    }
+    .register-container > * { position: relative; z-index: 1; }
+    .register-container h2 { color: #0077cc; margin-bottom: 1em; font-weight: 700; letter-spacing: 1px; }
+    .register-container input, .register-container button {
+      width: 100%;
+      padding: 0.8em;
+      margin-bottom: 1em;
+      border-radius: 8px;
+      border: 1px solid #e0eafc;
+      font-size: 1em;
+      box-shadow: 0 1px 4px #0077cc11;
+    }
+    .register-container button { background: linear-gradient(90deg, #0077cc 0%, #2193b0 100%); color: #fff; font-weight: 600; border: none; transition: background 0.2s; box-shadow: 0 2px 8px #0077cc22; }
+    .register-container button:hover { background: linear-gradient(90deg, #2193b0 0%, #0077cc 100%); }
+    .success, .error {
+      display: flex;
+      align-items: center;
+      gap: 0.7em;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 0.8em 1em;
+      margin-top: 1em;
+      text-align: center;
+      font-size: 1.05em;
+      animation: fadeIn 0.5s;
+      box-shadow: 0 2px 8px #0077cc11;
+    }
+    .success { color: #28a745; background: #eafaf1; }
+    .error { color: #c0392b; background: #fdecea; }
+    .success .icon, .error .icon { font-size: 1.3em; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: none; } }
+  </style>
+</head>
+<body>
+  <!-- Minimal Navbar for Login/Register -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">TravelPlanner</div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="login.html">Login</a></li>
+        <li><a href="register.html">Register</a></li>
+      </ul>
+    </nav>
+  </header>
+  <div class="register-container">
+    <h2>Register</h2>
+    <form id="register-form" autocomplete="off">
+      <input name="first_name" placeholder="First Name" required pattern="[A-Za-z]{2,}" title="First name should be at least 2 letters and only alphabets.">
+      <input name="last_name" placeholder="Last Name" required pattern="[A-Za-z]{2,}" title="Last name should be at least 2 letters and only alphabets.">
+      <input name="mobile" type="tel" placeholder="Mobile Number" required pattern="[0-9]{10}" maxlength="10" title="Mobile number must be 10 digits.">
+      <input name="email" type="email" placeholder="Email" required>
+      <input name="username" placeholder="Username" required minlength="4" title="Username should be at least 4 characters.">
+      <input name="password" type="password" placeholder="Password" required minlength="6" title="Password should be at least 6 characters.">
+      <button type="submit">Register</button>
+      <p style="text-align:center;">Already have an account? <a href="login.html">Login here</a></p>
+    </form>
+    <div id="register-result"></div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var regForm = document.getElementById('register-form');
+      if (regForm) {
+        regForm.onsubmit = function(e) {
+          e.preventDefault();
+          const formData = new FormData(this);
+          fetch('php/register.php', {
+            method: 'POST',
+            body: formData
+          })
+          .then(res => res.json())
+          .then(data => {
+            const resultDiv = document.getElementById('register-result');
+            if (data.status === 'success') {
+              resultDiv.innerHTML = `<div class='success'>${data.msg || 'Registration successful. Please login.'}</div>`;
+              setTimeout(() => window.location.href = "login.html", 1500);
+            } else {
+              resultDiv.innerHTML = `<div class='error'>${data.msg || 'Registration failed.'}</div>`;
+            }
+          })
+          .catch(() => {
+            document.getElementById('register-result').innerHTML = `<div class='error'>Registration failed. Please try again.</div>`;
+          });
+        };
+      }
+    });
+
+    // Session check and UI update on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      fetch('php/session_status.php')
+        .then(res => res.json())
+        .then(data => {
+          if (data.logged_in) {
+            updateUIForLoggedInUser(data.username, data.user_type);
+          } else {
+            updateUIForLoggedOutUser();
+          }
+        })
+        .catch(() => {
+          updateUIForLoggedOutUser();
+        });
+    });
+
+    function updateUIForLoggedInUser(username, userType) {
+      const loginLink = document.getElementById('login-link');
+      const profileMenu = document.querySelector('.profile-menu');
+      const welcomeUser = document.getElementById('welcome-user');
+      if (loginLink) loginLink.style.display = 'none';
+      if (profileMenu) profileMenu.style.display = 'block';
+      if (welcomeUser) {
+        welcomeUser.textContent = `Welcome, ${username}!`;
+        welcomeUser.style.display = 'block';
+      }
+    }
+    function updateUIForLoggedOutUser() {
+      const loginLink = document.getElementById('login-link');
+      const profileMenu = document.querySelector('.profile-menu');
+      const welcomeUser = document.getElementById('welcome-user');
+      if (loginLink) loginLink.style.display = 'block';
+      if (profileMenu) profileMenu.style.display = 'none';
+      if (welcomeUser) welcomeUser.style.display = 'none';
+    }
+
+    // Profile menu toggle
+    document.addEventListener('click', function(e) {
+      const profileLink = document.getElementById('profile-link');
+      const profileDropdown = document.querySelector('.profile-dropdown');
+      if (e.target === profileLink) {
+        e.preventDefault();
+        profileDropdown.style.display = profileDropdown.style.display === 'none' ? 'block' : 'none';
+      } else if (!profileDropdown.contains(e.target)) {
+        profileDropdown.style.display = 'none';
+      }
+    });
+    document.getElementById('edit-profile-link').addEventListener('click', function(e) {
+      e.preventDefault();
+      alert('Edit Profile functionality coming soon!');
+    });
+    document.getElementById('logout-link').addEventListener('click', function(e) {
+      e.preventDefault();
+      fetch('php/logout.php')
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'success') {
+            updateUIForLoggedOutUser();
+            window.location.href = 'index.html';
+          }
+        })
+        .catch(() => {
+          updateUIForLoggedOutUser();
+          window.location.href = 'index.html';
+        });
+    });
+    document.querySelector('a[href="php/mybookings.php"]').addEventListener('click', function(e) {
+      e.preventDefault();
+      window.location.href = 'php/mybookings.php';
+    });
+  </script>
+  <script src="script.js"></script>
+</body>
+</html>

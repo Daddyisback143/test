@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Planner</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header>
+        <nav class="navbar">
+            <div class="logo">TravelPlanner</div>
+            <ul class="nav-links">
+                <li id="login-link"><a href="#auth">Login</a></li>
+                <li><a href="#hero">Home</a></li>
+                <li><a href="#planner">Tours</a></li>
+                <li><a href="#destinations">Destinations</a></li>
+                <li><a href="#packages">Packages</a></li>
+                <li><a href="#booking">Booking</a></li>
+                <li><a href="#gallery">Gallery</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li class="profile-menu" style="position:relative;">
+                    <a href="#" id="profile-link">My Profile &#x25BC;</a>
+                    <ul class="profile-dropdown" style="display:none;position:absolute;top:100%;left:0;background:#fff;box-shadow:0 2px 8px #0002;border-radius:8px;min-width:160px;z-index:10;">
+                        <li><a href="#" id="edit-profile-link" style="display:block;padding:10px 15px;color:#333;text-decoration:none;border-bottom:1px solid #eee;">Edit Profile</a></li>
+                        <li><a href="php/mybookings.php" style="display:block;padding:10px 15px;color:#333;text-decoration:none;border-bottom:1px solid #eee;">My Bookings</a></li>
+                        <li><a href="#" id="logout-link" style="display:block;padding:10px 15px;color:#333;text-decoration:none;">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <div id="welcome-user" style="color:#fff;margin-left:1em;"></div>
+            <div class="nav-toggler">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+        <div class="hero-content">
+            <h1>Discover Amazing Destinations</h1>
+            <p>Plan your perfect trip with our expert travel services</p>
+            <a href="#booking" class="btn">Start Planning</a>
+        </div>
+    </section>
+
+    <!-- Popular Destinations Section -->
+    <section id="destinations" class="destinations">
+        <div class="container">
+            <h2>Popular Destinations</h2>
+            <div class="destinations-grid">
+                <div class="dest-card" data-city="mumbai">
+                    <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Mumbai">
+                    <div class="dest-info">
+                        <h3>Mumbai</h3>
+                        <p>The City of Dreams</p>
+                        <div class="dest-meta">
+                            <span>🏙️ Metropolitan City</span>
+                            <span>🌊 Gateway of India</span>
+                            <span>🎬 Bollywood</span>
+                        </div>
+                        <div class="dest-price">Starting from ₹5,000</div>
+                        <div class="dest-actions">
+                            <button class="btn view-dest-btn" onclick="showDestinationDetails('mumbai')">View Details</button>
+                            <button class="btn book-dest-btn" onclick="goToBooking('mumbai')">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="dest-card" data-city="delhi">
+                    <img src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Delhi">
+                    <div class="dest-info">
+                        <h3>Delhi</h3>
+                        <p>Heart of India</p>
+                        <div class="dest-meta">
+                            <span>🏛️ Historical Capital</span>
+                            <span>🕌 Red Fort</span>
+                            <span>🍜 Street Food</span>
+                        </div>
+                        <div class="dest-price">Starting from ₹4,500</div>
+                        <div class="dest-actions">
+                            <button class="btn view-dest-btn" onclick="showDestinationDetails('delhi')">View Details</button>
+                            <button class="btn book-dest-btn" onclick="goToBooking('delhi')">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="dest-card" data-city="goa">
+                    <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Goa">
+                    <div class="dest-info">
+                        <h3>Goa</h3>
+                        <p>Pearl of the Orient</p>
+                        <div class="dest-meta">
+                            <span>🏖️ Beach Paradise</span>
+                            <span>🌅 Sunset Views</span>
+                            <span>🎉 Nightlife</span>
+                        </div>
+                        <div class="dest-price">Starting from ₹6,500</div>
+                        <div class="dest-actions">
+                            <button class="btn view-dest-btn" onclick="showDestinationDetails('goa')">View Details</button>
+                            <button class="btn book-dest-btn" onclick="goToBooking('goa')">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="dest-card" data-city="jaipur">
+                    <img src="https://images.unsplash.com/photo-1596178065887-1198b6148b2b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Jaipur">
+                    <div class="dest-info">
+                        <h3>Jaipur</h3>
+                        <p>The Pink City</p>
+                        <div class="dest-meta">
+                            <span>🏰 Royal Heritage</span>
+                            <span>🕌 Amber Fort</span>
+                            <span>🛍️ Shopping</span>
+                        </div>
+                        <div class="dest-price">Starting from ₹4,000</div>
+                        <div class="dest-actions">
+                            <button class="btn view-dest-btn" onclick="showDestinationDetails('jaipur')">View Details</button>
+                            <button class="btn book-dest-btn" onclick="goToBooking('jaipur')">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="dest-card" data-city="kerala">
+                    <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Kerala">
+                    <div class="dest-info">
+                        <h3>Kerala</h3>
+                        <p>God's Own Country</p>
+                        <div class="dest-meta">
+                            <span>🌴 Backwaters</span>
+                            <span>🍃 Tea Gardens</span>
+                            <span>🏔️ Western Ghats</span>
+                        </div>
+                        <div class="dest-price">Starting from ₹5,500</div>
+                        <div class="dest-actions">
+                            <button class="btn view-dest-btn" onclick="showDestinationDetails('kerala')">View Details</button>
+                            <button class="btn book-dest-btn" onclick="goToBooking('kerala')">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="dest-card" data-city="udaipur">
+                    <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Udaipur">
+                    <div class="dest-info">
+                        <h3>Udaipur</h3>
+                        <p>City of Lakes</p>
+                        <div class="dest-meta">
+                            <span>🏰 Lake Palace</span>
+                            <span>🌊 Pichola Lake</span>
+                            <span>🎭 Cultural Heritage</span>
+                        </div>
+                        <div class="dest-price">Starting from ₹4,800</div>
+                        <div class="dest-actions">
+                            <button class="btn view-dest-btn" onclick="showDestinationDetails('udaipur')">View Details</button>
+                            <button class="btn book-dest-btn" onclick="goToBooking('udaipur')">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Travel Packages -->
+    <section id="packages" class="packages">
+        <div class="container">
+            <h2>Domestic Packages</h2>
+            <div class="package-cards" id="domestic-packages"></div>
+            <button class="btn" id="view-all-domestic-btn" style="margin:30px auto 0 auto;display:block;">View All Domestic Packages</button>
+            <h2 style="margin-top:60px;">International Packages</h2>
+            <div class="package-cards" id="international-packages"></div>
+            <button class="btn" id="view-all-international-btn" style="margin:30px auto 0 auto;display:block;">View All International Packages</button>
+        </div>
+    </section>
+
+    <!-- Planner with Date & Smart Suggestion -->
+    <section id="planner" class="planner">
+        <div class="container">
+            <h2>Plan Your Trip</h2>
+            <form id="planner-form">
+                <div class="form-group">
+                    <label>To (Destination City):</label>
+                    <select name="to_city" required>
+                        <option value="">Select a city</option>
+                        <optgroup label="International">
+                            <option value="paris">Paris</option>
+                            <option value="london">London</option>
+                            <option value="new_york">New York</option>
+                            <option value="tokyo">Tokyo</option>
+                            <option value="dubai">Dubai</option>
+                            <option value="singapore">Singapore</option>
+                        </optgroup>
+                        <optgroup label="Domestic">
+                            <option value="mumbai">Mumbai</option>
+                            <option value="delhi">Delhi</option>
+                            <option value="jaipur">Jaipur</option>
+                            <option value="goa">Goa</option>
+                            <option value="udaipur">Udaipur</option>
+                            <option value="kerala">Kerala</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Start Date:</label>
+                    <input type="date" name="start_date" required>
+                </div>
+
+                <div class="form-group">
+                    <label>End Date:</label>
+                    <input type="date" name="end_date" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Number of Travelers:</label>
+                    <input type="number" name="travelers" min="1" max="10" value="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Travel Style:</label>
+                    <select name="travel_style" required>
+                        <option value="budget">Budget</option>
+                        <option value="standard">Standard</option>
+                        <option value="luxury">Luxury</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn">Generate Plan</button>
+            </form>
+
+            <div id="suggestions" class="plan-results">
+                <!-- Travel plan will appear here -->
+            </div>
+
+            <div id="map" style="display:none; margin-top: 30px;"></div>
+        </div>
+    </section>
+
+    <!-- Booking Section (Train, Bus, Flight, Hotel) -->
+    <section id="booking" class="booking">
+        <div class="container">
+            <h2>Book Your Travel</h2>
+            
+            <!-- Step 1: Basic Details Form -->
+            <form class="booking-form" id="booking-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="source">From (Source City):</label>
+                        <input name="source" type="text" id="source" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="destination">To (Destination City):</label>
+                        <input name="destination" type="text" id="destination" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="date">Date of Journey:</label>
+                        <input name="date" type="date" id="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="num_travelers">Number of Travelers:</label>
+                        <input name="num_travelers" type="number" id="num_travelers" min="1" max="10" value="1" required>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn">Get Fares</button>
+            </form>
+            
+            <!-- Step 2: Fare Options Display -->
+            <div id="fare-options" style="display: none;">
+                <h3>Available Fares</h3>
+                <div class="fare-cards">
+                    <div class="fare-card" data-mode="flight">
+                        <h4>✈️ Flight</h4>
+                        <div class="fare-price">₹<span id="flight-fare">0</span></div>
+                        <div class="fare-details">
+                            <p>Duration: 2-4 hours</p>
+                            <p>Comfort: Premium</p>
+                        </div>
+                        <button class="btn select-fare-btn" data-mode="flight">Select Flight</button>
+                    </div>
+                    <div class="fare-card" data-mode="train">
+                        <h4>🚂 Train</h4>
+                        <div class="fare-price">₹<span id="train-fare">0</span></div>
+                        <div class="fare-details">
+                            <p>Duration: 8-24 hours</p>
+                            <p>Comfort: Good</p>
+                        </div>
+                        <button class="btn select-fare-btn" data-mode="train">Select Train</button>
+                    </div>
+                    <div class="fare-card" data-mode="bus">
+                        <h4>🚌 Bus</h4>
+                        <div class="fare-price">₹<span id="bus-fare">0</span></div>
+                        <div class="fare-details">
+                            <p>Duration: 12-36 hours</p>
+                            <p>Comfort: Standard</p>
+                        </div>
+                        <button class="btn select-fare-btn" data-mode="bus">Select Bus</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 3: Traveler Details Form -->
+            <form id="traveler-form" style="display: none;">
+                <h3>Enter Traveler Details</h3>
+                <div id="traveler-fields"></div>
+                <button type="submit" class="btn">Book Ticket</button>
+            </form>
+            
+            <!-- Booking Result Display -->
+            <div id="booking-result"></div>
+        </div>
+    </section>
+
+    <!-- User Login & Registration -->
+    <section id="auth" class="auth">
+        <div class="container" style="max-width:400px;margin:2em auto;background:#fff;border-radius:16px;box-shadow:0 4px 24px #0077cc22;padding:2.5em 2em;">
+            <h2 style="color:#0077cc;">Login or Register</h2>
+            <form id="login-form" autocomplete="off" class="auth-form" onsubmit="return false;">
+                <input name="username" placeholder="Username" required style="width:100%;padding:0.8em;margin-bottom:1em;border-radius:8px;border:1px solid #e0eafc;font-size:1em;">
+                <input name="password" type="password" placeholder="Password" required style="width:100%;padding:0.8em;margin-bottom:1em;border-radius:8px;border:1px solid #e0eafc;font-size:1em;" autocomplete="off">
+                <button type="submit" class="btn" style="width:100%;background:#0077cc;color:#fff;font-weight:600;border:none;border-radius:8px;padding:0.8em 0;margin-bottom:0.5em;">Login</button>
+                <div style="text-align:right;margin-bottom:1em;">
+                  <span class="forgot-link" style="color:#2193b0;text-decoration:underline;cursor:pointer;font-size:0.95em;" onclick="document.getElementById('login-form').style.display='none';document.getElementById('forgot-form').style.display='block';">Forgot password?</span>
+                </div>
+                <p>Don't have an account? <a href="#" id="show-register">Register here</a></p>
+                <div id="login-result"></div>
+            </form>
+            <form action="#" method="post" class="auth-form" id="register-form" style="display:none;">
+                <input name="first_name" placeholder="First Name" required pattern="[A-Za-z]{2,}" title="First name should be at least 2 letters and only alphabets.">
+                <input name="last_name" placeholder="Last Name" required pattern="[A-Za-z]{2,}" title="Last name should be at least 2 letters and only alphabets.">
+                <input name="mobile" type="tel" placeholder="Mobile Number" required pattern="[0-9]{10}" maxlength="10" title="Mobile number must be 10 digits.">
+                <input name="email" type="email" placeholder="Email" required>
+                <input name="username" placeholder="Username" required minlength="4" title="Username should be at least 4 characters.">
+                <input name="password" type="password" placeholder="Password" required minlength="6" title="Password should be at least 6 characters.">
+                <button type="submit" class="btn" style="width:100%;background:#2193b0;color:#fff;font-weight:600;border:none;border-radius:8px;padding:0.8em 0;">Register</button>
+                <p>Already have an account? <a href="#" id="show-login">Login here</a></p>
+            </form>
+            <form id="forgot-form" style="display:none;">
+                <h3 style="color:#2193b0;">Forgot Password</h3>
+                <input name="name" placeholder="Full Name" required style="width:100%;padding:0.8em;margin-bottom:1em;border-radius:8px;border:1px solid #e0eafc;font-size:1em;">
+                <input name="username" placeholder="Username" required style="width:100%;padding:0.8em;margin-bottom:1em;border-radius:8px;border:1px solid #e0eafc;font-size:1em;">
+                <input name="email" type="email" placeholder="Email" required style="width:100%;padding:0.8em;margin-bottom:1em;border-radius:8px;border:1px solid #e0eafc;font-size:1em;">
+                <button type="submit" style="width:100%;background:#e67e22;color:#fff;font-weight:600;border:none;border-radius:8px;padding:0.8em 0;">Request Reset</button>
+                <div style="text-align:right;margin-bottom:1em;">
+                  <span class="forgot-link" style="color:#0077cc;text-decoration:underline;cursor:pointer;font-size:0.95em;" onclick="document.getElementById('forgot-form').style.display='none';document.getElementById('login-form').style.display='block';">Back to login</span>
+                </div>
+                <div id="forgot-result"></div>
+            </form>
+            <div id="register-result"></div>
+         </div>
+    </section>
+
+    <!-- Photo Gallery Section -->
+    <section id="gallery" class="gallery">
+        <div class="container">
+            <h2>Gallery</h2>
+            <div class="gallery-filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="beach">Beaches</button>
+                <button class="filter-btn" data-filter="mountain">Mountains</button>
+                <button class="filter-btn" data-filter="city">Cities</button>
+                <button class="filter-btn" data-filter="culture">Culture</button>
+            </div>
+            <div class="gallery-grid" id="gallery-grid">
+                <!-- Gallery items will be dynamically added here -->
+            </div>
+            <button id="view-all-gallery" class="filter-btn" style="margin:2rem auto 0 auto;display:block;">View All Gallery</button>
+        </div>
+    </section>
+    <!-- Full Gallery Modal -->
+    <div class="lightbox" id="gallery-modal" style="display:none;">
+        <span class="close-lightbox" id="close-gallery-modal">&times;</span>
+        <div class="lightbox-content" style="max-width:700px;">
+            <img src="" alt="" id="gallery-modal-img" style="width:100%;border-radius:8px;">
+            <div class="lightbox-caption" id="gallery-modal-caption"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1em;">
+                <button id="gallery-prev" class="filter-btn">&larr; Prev</button>
+                <span id="gallery-count" style="color:white;"></span>
+                <button id="gallery-next" class="filter-btn">Next &rarr;</button>
+            </div>
+        </div>
+    </div>
+    <script>
+    // Gallery data
+    const galleryItems = [
+        { src: 'assets/gallery/goa-beach.jpg', caption: 'Beautiful beaches of Goa', category: 'beach' },
+        { src: 'assets/gallery/himalayas.jpg', caption: 'Majestic Himalayas', category: 'mountain' },
+        { src: 'assets/gallery/delhi.jpg', caption: 'Historic Delhi', category: 'city' },
+        { src: 'assets/gallery/varanasi.jpg', caption: 'Spiritual Varanasi', category: 'culture' },
+        { src: 'assets/gallery/andaman.jpg', caption: 'Crystal clear waters of Andaman', category: 'beach' },
+        { src: 'assets/gallery/rajasthan.jpg', caption: 'Royal Rajasthan', category: 'culture' },
+        { src: 'assets/gallery/mumbai.jpg', caption: 'Vibrant Mumbai', category: 'city' },
+        { src: 'assets/gallery/kerala.jpg', caption: 'Serene Kerala backwaters', category: 'culture' },
+        { src: 'assets/gallery/ladakh.jpg', caption: 'Breathtaking Ladakh', category: 'mountain' }
+    ];
+    // Render gallery items
+    function renderGallery(items) {
+        const grid = document.getElementById('gallery-grid');
+        grid.innerHTML = items.map(item => `
+            <div class="gallery-item" data-category="${item.category}">
+                <img src="${item.src}" alt="${item.caption}">
+                <div class="gallery-caption">${item.caption}</div>
+            </div>
+        `).join('');
+        // Add click handlers
+        document.querySelectorAll('.gallery-item').forEach((item, idx) => {
+            item.addEventListener('click', () => {
+                openGalleryModal(idx);
+            });
+        });
+    }
+    // Filter functionality
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const filter = btn.dataset.filter;
+            const filteredItems = filter === 'all' ? galleryItems : galleryItems.filter(item => item.category === filter);
+            renderGallery(filteredItems);
+        });
+    });
+    // --- View All Gallery Modal Logic ---
+    let currentGalleryIndex = 0;
+    const galleryModal = document.getElementById('gallery-modal');
+    const galleryModalImg = document.getElementById('gallery-modal-img');
+    const galleryModalCaption = document.getElementById('gallery-modal-caption');
+    const galleryCount = document.getElementById('gallery-count');
+    const galleryPrev = document.getElementById('gallery-prev');
+    const galleryNext = document.getElementById('gallery-next');
+    const closeGalleryModal = document.getElementById('close-gallery-modal');
+    document.getElementById('view-all-gallery').addEventListener('click', function() {
+        currentGalleryIndex = 0;
+        showGalleryModal(currentGalleryIndex);
+        galleryModal.style.display = 'block';
+    });
+    function openGalleryModal(idx) {
+        currentGalleryIndex = idx;
+        showGalleryModal(currentGalleryIndex);
+        galleryModal.style.display = 'block';
+    }
+    function showGalleryModal(idx) {
+        const item = galleryItems[idx];
+        galleryModalImg.src = item.src;
+        galleryModalCaption.innerHTML = `<b>${item.caption}</b><br><span style='font-size:0.95em;color:#ccc;'>Category: ${item.category}</span>`;
+        galleryCount.textContent = `${idx + 1} / ${galleryItems.length}`;
+    }
+    galleryPrev.addEventListener('click', function() {
+        currentGalleryIndex = (currentGalleryIndex - 1 + galleryItems.length) % galleryItems.length;
+        showGalleryModal(currentGalleryIndex);
+    });
+    galleryNext.addEventListener('click', function() {
+        currentGalleryIndex = (currentGalleryIndex + 1) % galleryItems.length;
+        showGalleryModal(currentGalleryIndex);
+    });
+    closeGalleryModal.addEventListener('click', function() {
+        galleryModal.style.display = 'none';
+    });
+    galleryModal.addEventListener('click', function(e) {
+        if (e.target === galleryModal) galleryModal.style.display = 'none';
+    });
+    // Initial render
+    renderGallery(galleryItems);
+    // --- Navbar Gallery Link Modal ---
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        if (link.textContent.trim().toLowerCase() === 'gallery') {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('view-all-gallery').click();
+            });
+        }
+    });
+    </script>
+
+    <!-- Call To Action Section -->
+    <section id="cta" class="cta">
+        <div class="container">
+            <h2>Ready to Start Your Adventure?</h2>
+            <p>Contact us today to plan the trip of a lifetime.</p>
+            <a href="#contact" class="btn">Contact Us</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section about">
+                    <h3>About TravelPlanner</h3>
+                    <p>TravelPlanner offers the best tours and packages for your perfect vacation. Explore new places and make unforgettable memories.</p>
+                </div>
+                <div class="footer-section contact-info">
+                    <h3>Contact</h3>
+                    <p>Email: sarveshtravelplanner@gmail.com</p>
+                    <p>Phone: +91 9130123270</p>
+                    <div class="socials">
+                        <a href="#">Facebook</a>
+                        <a href="#">Instagram</a>
+                        <a href="#">Twitter</a>
+                    </div>
+                </div>
+                <div class="footer-section contact-form">
+                    <h3>Contact Us</h3>
+                    <form id="contact-form">
+                        <input type="text" name="name" placeholder="Your Name" required>
+                        <input type="email" name="email" placeholder="Your Email" required>
+                        <textarea name="message" placeholder="Your Message" required></textarea>
+                        <button type="submit" class="btn">Send Message</button>
+                        <div id="contact-result"></div>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                &copy; 2025 TravelPlanner. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html> 

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>All Packages - TravelPlanner</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .package-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .view-package-btn {
+      background: #43cea2;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .book-package-btn {
+      background: #185a9d;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .view-package-btn:hover {
+      background: #3bb890;
+    }
+
+    .book-package-btn:hover {
+      background: #43cea2;
+    }
+
+    /* Package Modal Styles */
+    .package-modal {
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .package-modal .modal-content {
+      background: white;
+      border-radius: 12px;
+      max-width: 900px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .package-modal .close-modal {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 1001;
+      color: #333;
+      background: white;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .package-detail {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .package-detail .detail-image {
+      height: 300px;
+      overflow: hidden;
+      border-radius: 12px 12px 0 0;
+    }
+
+    .package-detail .detail-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .package-detail .detail-info {
+      padding: 30px;
+    }
+
+    .package-detail .detail-info h2 {
+      color: #185a9d;
+      margin-bottom: 15px;
+    }
+
+    .package-detail .package-meta {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .package-detail .description {
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .package-detail .price {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #185a9d;
+      margin-bottom: 20px;
+    }
+
+    .package-detail .detail-actions {
+      display: flex;
+      gap: 15px;
+    }
+
+    .package-detail .detail-actions .book-package-btn {
+      flex: 1;
+      padding: 12px 24px;
+      font-size: 16px;
+    }
+
+    .package-detail .detail-actions .btn-close {
+      background: #666;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .package-detail .detail-actions .btn-close:hover {
+      background: #555;
+    }
+
+    /* Responsive modal */
+    @media (max-width: 768px) {
+      .package-modal .modal-content {
+        width: 95%;
+        margin: 20px;
+      }
+      
+      .package-detail .detail-info {
+        padding: 20px;
+      }
+      
+      .package-detail .detail-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 id="domestic">All Domestic Packages</h2>
+    <div class="package-cards" id="domestic-packages"></div>
+    <h2 id="international" style="margin-top:60px;">All International Packages</h2>
+    <div class="package-cards" id="international-packages"></div>
+    <a href="index.html" class="btn" style="margin:40px auto 0 auto;display:block;width:max-content;">Back to Home</a>
+  </div>
+  <script>
+// --- Dynamic Package Data (import from script.js for consistency) ---
+// (You should ideally import or share the same data, but for now, copy the full arrays from script.js)
+const domesticPackages = [
+  {
+    name: 'Goa Beach Getaway',
+    img: 'https://your-image-url.com/goa.jpg',
+    meta: '5 Days / 4 Nights<br>Cities: Panaji, Calangute, Baga<br>Travel: Flight, Cab<br>Meals: Included<br>Hotels: Taj Vivanta, Beach Bay Resort',
+    price: 18999,
+    desc: '5 days, 4 nights. Explore North & South Goa beaches, nightlife, and spice plantation tour.'
+  },
+  {
+    name: 'Himachal Adventure Escape',
+    img: 'https://your-image-url.com/himachal.jpg',
+    meta: '7 Days / 6 Nights<br>Cities: Shimla, Manali, Solang Valley<br>Travel: Train, Bus, Cab<br>Meals: Included<br>Hotels: Snow Valley Resort, Apple Country Resort',
+    price: 21999,
+    desc: '7 days, 6 nights. Enjoy snow activities, scenic valleys, and local sightseeing.'
+  },
+  {
+    name: 'Kerala Backwaters Retreat',
+    img: 'https://your-image-url.com/kerala.jpg',
+    meta: '6 Days / 5 Nights<br>Cities: Kochi, Munnar, Alleppey<br>Travel: Flight, Cab, Boat<br>Meals: Included<br>Hotels: Spice Jungle Resort, Houseboat Stay',
+    price: 20499,
+    desc: '6 days, 5 nights. Tea gardens, wildlife safari, houseboat cruise through backwaters.'
+  },
+  {
+    name: 'Golden Triangle Tour',
+    img: 'https://your-image-url.com/golden-triangle.jpg',
+    meta: '6 Days / 5 Nights<br>Cities: Delhi, Agra, Jaipur<br>Travel: Train, Cab<br>Meals: Included<br>Hotels: Radisson Blu, Hotel Clarks Shiraz',
+    price: 17999,
+    desc: '6 days, 5 nights. Visit Taj Mahal, Jaipur forts, and heritage sites.'
+  },
+  {
+    name: 'Andaman Island Bliss',
+    img: 'https://your-image-url.com/andaman.jpg',
+    meta: '6 Days / 5 Nights<br>Cities: Port Blair, Havelock, Neil Island<br>Travel: Flight, Ferry<br>Meals: Included<br>Hotels: SeaShell, Silver Sand Beach Resort',
+    price: 24999,
+    desc: '6 days, 5 nights. Explore pristine beaches, coral reefs, and cellular jail.'
+  },
+  {
+    name: 'Rajasthan Heritage Tour',
+    img: 'https://your-image-url.com/rajasthan.jpg',
+    meta: '7 Days / 6 Nights<br>Cities: Jaipur, Udaipur, Jodhpur, Jaisalmer<br>Travel: Train, Cab<br>Meals: Included<br>Hotels: Heritage Hotel, Desert Camp',
+    price: 29999,
+    desc: '7 days, 6 nights. Forts, palaces, desert safari, and cultural experiences.'
+  },
+  {
+    name: 'Kashmir Paradise on Earth',
+    img: 'https://your-image-url.com/kashmir.jpg',
+    meta: '6 Days / 5 Nights<br>Cities: Srinagar, Gulmarg, Pahalgam<br>Travel: Flight, Cab<br>Meals: Included<br>Hotels: Houseboat, Hotel Hilltop',
+    price: 23999,
+    desc: '6 days, 5 nights. Srinagar Dal Lake, Gulmarg snow activities, Pahalgam betaab valley.'
+  },
+  {
+    name: 'Spiti Valley Adventure',
+    img: 'https://your-image-url.com/spiti.jpg',
+    meta: '8 Days / 7 Nights<br>Cities: Shimla, Kinnaur, Spiti Valley<br>Travel: Bus, Cab<br>Meals: Included<br>Hotels: Hotel Spiti, Camp Stay',
+    price: 28999,
+    desc: '8 days, 7 nights. High-altitude desert, monasteries, and stunning landscapes.'
+  },
+  {
+    name: 'Darjeeling and Gangtok Delight',
+    img: 'https://your-image-url.com/darjeeling.jpg',
+    meta: '7 Days / 6 Nights<br>Cities: Darjeeling, Gangtok<br>Travel: Train, Cab<br>Meals: Included<br>Hotels: Mayfair Himalayan Resort, Hotel Hilltop',
+    price: 21999,
+    desc: '7 days, 6 nights. Tea gardens, monasteries, and panoramic views of Kanchenjunga.'
+  },
+  {
+    name: 'Munnar and Alleppey Backwaters',
+    img: 'https://your-image-url.com/munnar.jpg',
+    meta: '5 Days / 4 Nights<br>Cities: Munnar, Alleppey<br>Travel: Flight, Cab, Houseboat<br>Meals: Included<br>Hotels: Tea County Resort, Houseboat Stay',
+    price: 19999,
+    desc: '5 days, 4 nights. Munnar tea gardens, Alleppey backwaters, and houseboat cruise.'
+  }
+];
+const internationalPackages = [
+  {
+    name: 'Maldives Explorer',
+    img: 'https://your-image-url.com/maldives.jpg',
+    meta: '4 Days / 3 Nights<br>Cities: Malé, Maafushi, Banana Reef<br>Travel: Flight, Boat<br>Meals: Included<br>Hotels: Paradise Island Resort, Maafushi Inn',
+    price: 24999,
+    desc: '4 days, 3 nights. Maafushi, Banana Reef, city tour.'
+  },
+  {
+    name: 'Thailand Delight',
+    img: 'https://your-image-url.com/thailand.jpg',
+    meta: '5 Days / 4 Nights<br>Cities: Bangkok, Pattaya<br>Travel: Flight, Cab<br>Meals: Included<br>Hotels: The Berkeley Hotel, Avani Pattaya',
+    price: 28999,
+    desc: '5 days, 4 nights. Coral island tour, shopping, nightlife.'
+  },
+  {
+    name: 'Dubai Luxury Tour',
+    img: 'https://your-image-url.com/dubai.jpg',
+    meta: '4 Days / 3 Nights<br>Cities: Dubai, Abu Dhabi<br>Travel: Flight, Cab<br>Meals: Included<br>Hotels: Burj Al Arab View Hotel, City Max',
+    price: 37999,
+    desc: '4 days, 3 nights. Burj Khalifa, desert safari, city tour.'
+  },
+  {
+    name: 'Singapore City Fun',
+    img: 'https://your-image-url.com/singapore.jpg',
+    meta: '5 Days / 4 Nights<br>Cities: Singapore<br>Travel: Flight, Cab, Metro<br>Meals: Included<br>Hotels: Marina Bay Sands, Hotel Boss',
+    price: 40999,
+    desc: '5 days, 4 nights. Gardens by the Bay, Universal Studios, city tour.'
+  },
+  {
+    name: 'Bali Bliss',
+    img: 'https://your-image-url.com/bali.jpg',
+    meta: '6 Days / 5 Nights<br>Cities: Denpasar, Ubud, Kuta<br>Travel: Flight, Cab<br>Meals: Included<br>Hotels: Ayodya Resort, Grand Mirage Resort',
+    price: 29999,
+    desc: '6 days, 5 nights. Ubud rice terraces, Kuta beach, water temple tour.'
+  },
+  {
+    name: 'Mauritius Tropical Paradise',
+    img: 'https://your-image-url.com/mauritius.jpg',
+    meta: '7 Days / 6 Nights<br>Cities: Grand Baie, Port Louis, Le Morne<br>Travel: Flight, Cab<br>Meals: Included<br>Hotels: Lux Grand Gaube, Heritage Awali',
+    price: 34999,
+    desc: '7 days, 6 nights. Beaches, water sports, and cultural experiences.'
+  },
+  {
+    name: 'Seychelles Island Hopping',
+    img: 'https://your-image-url.com/seychelles.jpg',
+    meta: '5 Days / 4 Nights<br>Cities: Mahé, Praslin, La Digue<br>Travel: Flight, Ferry<br>Meals: Included<br>Hotels: Savoy Resort, Paradise Sun',
+    price: 37999,
+    desc: '5 days, 4 nights. Snorkeling, beaches, and nature reserves.'
+  },
+  {
+    name: 'Zanzibar Beach Holiday',
+    img: 'https://your-image-url.com/zanzibar.jpg',
+    meta: '6 Days / 5 Nights<br>Cities: Zanzibar City, Nungwi, Kendwa<br>Travel: Flight, Cab<br>Meals: Included<br>Hotels: Park Hyatt Zanzibar, The Z Hotel',
+    price: 42999,
+    desc: '6 days, 5 nights. Spice tour, Stone Town, and beach relaxation.'
+  },
+  {
+    name: 'Egypt Pyramids and Nile Cruise',
+    img: 'https://your-image-url.com/egypt.jpg',
+    meta: '8 Days / 7 Nights<br>Cities: Cairo, Luxor, Aswan<br>Travel: Flight, Cruise<br>Meals: Included<br>Hotels: Steigenberger Nile Palace, Mena House',
+    price: 49999,
+    desc: '8 days, 7 nights. Pyramids tour, Nile cruise, and Abu Simbel excursion.'
+  },
+  {
+    name: 'Jordan Petra and Wadi Rum',
+    img: 'https://your-image-url.com/jordan.jpg',
+    meta: '6 Days / 5 Nights<br>Cities: Amman, Petra, Wadi Rum<br>Travel: Flight, Bus<br>Meals: Included<br>Hotels: Petra Marriott Hotel, Wadi Rum Night Luxury Camp',
+    price: 45999,
+    desc: '6 days, 5 nights. Petra visit, Wadi Rum desert safari, and Dead Sea relaxation.'
+  }
+];
+function renderPackages(packages, containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+  packages.forEach(pkg => {
+    const card = document.createElement('div');
+    card.className = 'package-card';
+    card.innerHTML = `
+      <img src="${pkg.image || pkg.img}" alt="${pkg.name}">
+      <div class="package-info">
+        <h3>${pkg.name}</h3>
+        <div class="package-desc">${pkg.description || pkg.desc}</div>
+        <div class="package-price">&#8377;${(pkg.price_per_person || pkg.price).toLocaleString('en-IN')} per person</div>
+        <div class="package-actions">
+          <button class="btn view-package-btn" onclick="showPackageDetails('${pkg.name}')">View Details</button>
+          <button class="btn book-package-btn" onclick="goToBooking('${pkg.name}')">Book Now</button>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+// Show package details in a modal
+function showPackageDetails(packageName) {
+  const allPackages = [...domesticPackages, ...internationalPackages];
+  const pkg = allPackages.find(p => p.name === packageName);
+  if (!pkg) return;
+
+  const modal = document.createElement('div');
+  modal.className = 'package-modal';
+  modal.innerHTML = `
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <div class="package-detail">
+        <div class="detail-image">
+          <img src="${pkg.image || pkg.img}" alt="${pkg.name}">
+        </div>
+        <div class="detail-info">
+          <h2>${pkg.name}</h2>
+          <div class="package-meta">${pkg.meta}</div>
+          <p class="description">${pkg.description || pkg.desc}</p>
+          <div class="price">&#8377;${(pkg.price_per_person || pkg.price).toLocaleString('en-IN')} per person</div>
+          <div class="detail-actions">
+            <button class="btn book-package-btn" onclick="goToBooking('${pkg.name}')">Book This Package</button>
+            <button class="btn-close" onclick="closePackageModal()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Close modal functionality
+  modal.querySelector('.close-modal').onclick = closePackageModal;
+  modal.onclick = function(e) {
+    if (e.target === modal) closePackageModal();
+  };
+}
+
+// Go to booking with package pre-filled
+function goToBooking(packageName) {
+  window.location.href = `index.html#booking`;
+  // Store package for pre-filling
+  localStorage.setItem('selectedPackage', packageName);
+}
+
+// Close package modal
+function closePackageModal() {
+  const modal = document.querySelector('.package-modal');
+  if (modal) {
+    modal.remove();
+  }
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+  renderPackages(domesticPackages, 'domestic-packages');
+  renderPackages(internationalPackages, 'international-packages');
+  // Scroll to anchor if present
+  if (window.location.hash) {
+    const el = document.querySelector(window.location.hash);
+    if (el) el.scrollIntoView({behavior: 'smooth'});
+  }
+});
+  </script>
+</body>
+</html>

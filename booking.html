@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Your Travel</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+      <div class="container">
+        <h1>Book Your Travel</h1>
+        <nav>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="php/mybookings.php">My Bookings</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <section id="booking" class="booking">
+      <div class="container">
+        <h2>Book Your Travel</h2>
+        <form id="booking-form" action="php/book.php" method="post">
+          <label>Travel By:</label>
+          <select name="type" id="travel-type" required>
+            <option value="flight">Flight</option>
+            <option value="bus">Bus</option>
+            <option value="train">Train</option>
+          </select>
+          <label>Date of Journey:</label>
+          <input name="date" type="date" required>
+          <label>Number of Travelers:</label>
+          <input name="num_travelers" type="number" min="1" max="10" required>
+          <button type="submit" class="btn">Proceed</button>
+        </form>
+      </div>
+    </section>
+    <script>
+    // --- On page load, check for query params and show traveler info form if present ---
+    function getQueryParams() {
+      const params = {};
+      window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(str,key,value) {
+        params[key] = decodeURIComponent(value);
+      });
+      return params;
+    }
+    const params = getQueryParams();
+    if (params.type && params.date && params.num_travelers && params.source && params.destination && params.fare && params.per_person) {
+      // Only show the booking summary and traveler form, hide all other content
+      document.body.innerHTML = `<div class='container'></div>`;
+      let html = `<h2>Booking Details</h2>`;
+      html += `<div class='booking-summary'>
+        <b>From:</b> ${params.source}<br>
+        <b>To:</b> ${params.destination}<br>
+        <b>Mode:</b> ${params.type.charAt(0).toUpperCase() + params.type.slice(1)}<br>
+        <b>Date:</b> ${params.date}<br>
+        <b>Travelers:</b> ${params.num_travelers}<br>
+        <b>Cost per Person:</b> ₹${params.per_person}<br>
+        <b>Total Fare:</b> ₹${params.fare}
+      </div>`;
+      html += `<h2>Enter Traveler Details</h2><form id='traveler-form'>`;
+      for (let i = 1; i <= params.num_travelers; i++) {
+        html += `<div class='traveler-group'><h4>Traveler ${i}</h4><label>Name:</label><input name='traveler_name_${i}' required><label>Age:</label><input name='traveler_age_${i}' type='number' min='1' required><label>Gender:</label><select name='traveler_gender_${i}' required><option value='male'>Male</option><option value='female'>Female</option><option value='other'>Other</option></select></div>`;
+      }
+      html += `<button type='submit' class='btn'>Book Ticket</button></form><div id='booking-result'></div>`;
+      document.querySelector('.container').innerHTML = html;
+      // Add modern CSS for booking summary and traveler form
+      const style = document.createElement('style');
+      style.innerHTML = `
+        body { background: #f7f7f7; font-family: 'Poppins', sans-serif; }
+        .container { max-width: 600px; margin: 2em auto; background: #fff; border-radius: 14px; box-shadow: 0 4px 24px #0001; padding: 2em; }
+        h2 { color: #0077cc; margin-top: 0; }
+        .booking-summary { background: #e3f2fd; border-radius: 10px; padding: 1.2em; margin-bottom: 2em; font-size: 1.1em; }
+        .traveler-group { background: #f0f8ff; border-radius: 8px; margin: 1em 0; padding: 1em; }
+        label { display: block; margin-top: 0.7em; color: #2193b0; font-weight: 500; }
+        input, select { width: 100%; padding: 0.7em; border-radius: 6px; border: 1px solid #b2d8e6; margin-top: 0.3em; font-size: 1em; background: #f7fbfc; }
+        .btn { background: linear-gradient(90deg, #2193b0 0%, #6dd5ed 100%); color: #fff; border: none; border-radius: 8px; padding: 0.9em 0; font-size: 1.1em; font-weight: 600; cursor: pointer; margin-top: 1.2em; width: 100%; box-shadow: 0 2px 8px #2193b033; transition: background 0.2s; }
+        .btn:hover { background: linear-gradient(90deg, #6dd5ed 0%, #2193b0 100%); }
+        .success { color: #28a745; background: #eafaf1; border-radius: 6px; padding: 0.7em 1em; margin-top: 1em; text-align: center; }
+        .error { color: #c0392b; background: #fdecea; border-radius: 6px; padding: 0.7em 1em; margin-top: 1em; text-align: center; }
+      `;
+      document.head.appendChild(style);
+      document.getElementById('traveler-form').addEventListener('submit', function(ev) {
+        ev.preventDefault();
+        const formData = new FormData();
+        formData.append('type', params.type);
+        formData.append('date', params.date);
+        formData.append('num_travelers', params.num_travelers);
+        formData.append('source', params.source);
+        formData.append('destination', params.destination);
+        formData.append('fare', params.fare);
+        formData.append('per_person', params.per_person);
+        for (let i = 1; i <= params.num_travelers; i++) {
+          formData.append(`traveler_name_${i}`, ev.target[`traveler_name_${i}`].value);
+          formData.append(`traveler_age_${i}`, ev.target[`traveler_age_${i}`].value);
+          formData.append(`traveler_gender_${i}`, ev.target[`traveler_gender_${i}`].value);
+        }
+        fetch('php/book.php', {
+          method: 'POST',
+          body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+          let html = '';
+          if (data.status === 'success') {
+            html = `<div class='success'>${data.msg}</div>`;
+            if (data.pdf) {
+              const blob = new Blob([Uint8Array.from(atob(data.pdf), c => c.charCodeAt(0))], {type: 'application/pdf'});
+              const url = URL.createObjectURL(blob);
+              html += `<a href='${url}' download='ticket.pdf' class='btn' style='margin-top:1em;'>Download Ticket (PDF)</a>`;
+            }
+            if (data.html) {
+              const htmlTicket = atob(data.html);
+              html += `<div style='margin-top:2em;'><b>View Ticket:</b><br><div id='ticket-html-view'></div></div>`;
+              setTimeout(() => {
+                document.getElementById('ticket-html-view').innerHTML = htmlTicket;
+                // Show ticket no and transport no if present
+                if (data.ticket_no || data.transport_no) {
+                  const extra = document.createElement('div');
+                  extra.style.marginTop = '1em';
+                  extra.innerHTML =
+                    (data.ticket_no ? `<b>Ticket No:</b> ${data.ticket_no}<br>` : '') +
+                    (data.transport_no ? `<b>${data.transport_no}</b><br>` : '');
+                  document.getElementById('ticket-html-view').appendChild(extra);
+                }
+              }, 0);
+            }
+          } else {
+            html = `<div class='error'>${data.msg || 'Booking failed.'}</div>`;
+          }
+          document.querySelector('#booking-result').innerHTML = html;
+        })
+        .catch(() => {
+          document.querySelector('#booking-result').innerHTML = `<div class='error'>Booking failed. Please try again.</div>`;
+        });
+      });
+    }
+    </script>
+</body>
+</html>

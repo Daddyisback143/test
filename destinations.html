@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destinations - TravelPlanner</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .destinations-container {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .destinations-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .destinations-header h1 {
+            color: #0077cc;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .destinations-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .category-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .category-tab {
+            padding: 0.8rem 1.5rem;
+            border: 2px solid #0077cc;
+            border-radius: 25px;
+            background: transparent;
+            color: #0077cc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .category-tab.active,
+        .category-tab:hover {
+            background: #0077cc;
+            color: white;
+        }
+        
+        .destinations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+        
+        .destination-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .destination-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+        
+        .destination-image {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .destination-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(0,119,204,0.8), rgba(33,147,176,0.8));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .destination-card:hover .destination-overlay {
+            opacity: 1;
+        }
+        
+        .explore-btn {
+            background: white;
+            color: #0077cc;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .explore-btn:hover {
+            background: #0077cc;
+            color: white;
+        }
+        
+        .destination-info {
+            padding: 1.5rem;
+        }
+        
+        .destination-info h3 {
+            color: #0077cc;
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+        
+        .destination-location {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .destination-description {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        .destination-features {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-tag {
+            background: #e3f2fd;
+            color: #0077cc;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .destination-price {
+            font-weight: 600;
+            color: #28a745;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .destination-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn-explore {
+            background: #0077cc;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.3s ease;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .btn-explore:hover {
+            background: #2193b0;
+        }
+        
+        .btn-book {
+            background: #28a745;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.3s ease;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .btn-book:hover {
+            background: #185a9d;
+        }
+        
+        .search-bar {
+            max-width: 500px;
+            margin: 0 auto 2rem auto;
+            position: relative;
+        }
+        
+        .search-bar input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid #e0eafc;
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        
+        .search-bar input:focus {
+            border-color: #0077cc;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .destinations-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .category-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .category-tab {
+                width: 200px;
+                text-align: center;
+            }
+        }
+
+        /* Modal Styles */
+        .destination-modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+            color: #333;
+            background: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .destination-detail {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-image {
+            height: 300px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .detail-info {
+            padding: 30px;
+        }
+
+        .detail-info h2 {
+            color: #185a9d;
+            margin-bottom: 10px;
+        }
+
+        .detail-info .location {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .detail-info .description {
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .detail-info .features {
+            margin-bottom: 20px;
+        }
+
+        .detail-info .features h4 {
+            color: #43cea2;
+            margin-bottom: 10px;
+        }
+
+        .detail-info .price {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #185a9d;
+            margin-bottom: 20px;
+        }
+
+        .detail-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .detail-actions .btn-book {
+            flex: 1;
+        }
+
+        .detail-actions .btn-close {
+            background: #666;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .detail-actions .btn-close:hover {
+            background: #555;
+        }
+
+        /* Button styles for overlay */
+        .destination-actions-overlay {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .btn-explore-overlay, .btn-book-overlay {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-explore-overlay {
+            background: rgba(255,255,255,0.9);
+            color: #185a9d;
+        }
+
+        .btn-book-overlay {
+            background: #185a9d;
+            color: white;
+        }
+
+        .btn-explore-overlay:hover {
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-book-overlay:hover {
+            background: #43cea2;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive modal */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 20px;
+            }
+            
+            .detail-info {
+                padding: 20px;
+            }
+            
+            .detail-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">TravelPlanner</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="destinations.html" class="active">Destinations</a></li>
+            <li><a href="packages.html">Packages</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="booking.html">Booking</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+    </nav>
+
+    <div class="destinations-container">
+        <div class="destinations-header">
+            <h1>Explore Amazing Destinations</h1>
+            <p>Discover the world's most beautiful places and plan your next adventure</p>
+        </div>
+
+        <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-input" placeholder="Search destinations...">
+        </div>
+
+        <div class="category-tabs">
+            <button class="category-tab active" data-category="all">All Destinations</button>
+            <button class="category-tab" data-category="beach">Beach Getaways</button>
+            <button class="category-tab" data-category="mountain">Mountain Adventures</button>
+            <button class="category-tab" data-category="city">City Breaks</button>
+            <button class="category-tab" data-category="culture">Cultural Heritage</button>
+            <button class="category-tab" data-category="wildlife">Wildlife & Nature</button>
+        </div>
+
+        <div class="destinations-grid" id="destinations-grid">
+            <!-- Destinations will be dynamically loaded here -->
+        </div>
+    </div>
+
+    <script>
+        // Destinations data
+        const destinations = [
+            {
+                name: "Goa",
+                location: "India",
+                description: "Famous for its pristine beaches, vibrant nightlife, and Portuguese heritage. Perfect for beach lovers and party enthusiasts.",
+                image: "https://th.bing.com/th/id/OIP.OsdnDjdW74sn01vHghKvOwHaFj?w=221&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                category: "beach",
+                features: ["Beaches", "Nightlife", "Heritage"],
+                price: "From ₹15,000"
+            },
+            {
+                name: "Kerala",
+                location: "India",
+                description: "God's Own Country with serene backwaters, lush tea gardens, and Ayurvedic wellness retreats.",
+                image: "https://th.bing.com/th/id/OIP.KX8jyV-N7KMbHfH6V64vwQHaDk?w=337&h=168&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                category: "culture",
+                features: ["Backwaters", "Ayurveda", "Tea Gardens"],
+                price: "From ₹18,000"
+            },
+            {
+                name: "Ladakh",
+                location: "India",
+                description: "High-altitude desert with stunning landscapes, ancient monasteries, and adventure activities.",
+                image: "https://th.bing.com/th/id/OIP.kaN4VnvSSguxcYILikQ71wHaEj?w=280&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                category: "mountain",
+                features: ["Mountains", "Monasteries", "Adventure"],
+                price: "From ₹25,000"
+            },
+            {
+                name: "Rajasthan",
+                location: "India",
+                description: "Land of kings with magnificent forts, palaces, and rich cultural heritage.",
+                image: "https://th.bing.com/th/id/OIP.tUcUdXBmUOKEZkHZiCgUagHaD2?w=346&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                category: "culture",
+                features: ["Forts", "Palaces", "Heritage"],
+                price: "From ₹20,000"
+            },
+            {
+                name: "Andaman Islands",
+                location: "India",
+                description: "Tropical paradise with crystal clear waters, coral reefs, and pristine beaches.",
+                image: "https://th.bing.com/th/id/OIP.Sj6RcXpyntkb6oQsIw7duAHaFd?w=265&h=195&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                category: "beach",
+                features: ["Beaches", "Water Sports", "Islands"],
+                price: "From ₹30,000"
+            },
+            {
+                name: "Mumbai",
+                location: "India",
+                description: "The city that never sleeps with Bollywood, street food, and iconic landmarks.",
+                image: "https://th.bing.com/th/id/OIP._Dd634fC7LL14UdF3-QWFQHaG_?w=160&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                category: "city",
+                features: ["Bollywood", "Street Food", "Landmarks"],
+                price: "From ₹12,000"
+            },
+            {
+                name: "Kaziranga National Park",
+                location: "India",
+                description: "Home to the endangered one-horned rhinoceros and diverse wildlife.",
+                image: "https://th.bing.com/th/id/OIP.8d3zGM5FxRHEXw-AGMpg6AHaFi?w=231&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                category: "wildlife",
+                features: ["Wildlife", "Safari", "Nature"],
+                price: "From ₹22,000"
+            },
+            {
+                name: "Darjeeling",
+                location: "India",
+                description: "Queen of Hills with tea gardens, toy train, and panoramic mountain views.",
+                image: "https://th.bing.com/th/id/OIP.3GHQXcjHC3tiSzJElW7UCgHaE8?w=240&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                category: "mountain",
+                features: ["Tea Gardens", "Toy Train", "Mountains"],
+                price: "From ₹18,000"
+            },
+            {
+                name: "Varanasi",
+                location: "India",
+                description: "Spiritual capital with ancient temples, Ganga ghats, and cultural experiences.",
+                image: "https://th.bing.com/th/id/OIP.KuFCmX8UdFrnydDAItCvowHaE7?w=267&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                category: "culture",
+                features: ["Spirituality", "Temples", "Ghats"],
+                price: "From ₹15,000"
+            },
+            {
+                name: "Maldives",
+                location: "International",
+                description: "Tropical paradise with overwater bungalows and crystal clear turquoise waters.",
+                image: "https://th.bing.com/th/id/OIP.F2b2bVhPKuGDYf6lmViHwgHaFj?w=236&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                category: "beach",
+                features: ["Overwater Bungalows", "Snorkeling", "Luxury"],
+                price: "From ₹45,000"
+            },
+            {
+                name: "Thailand",
+                location: "International",
+                description: "Land of smiles with beautiful beaches, temples, and vibrant street markets.",
+                image: "https://th.bing.com/th/id/OIP.ZnddV6vHCb6xS2_o73GemAHaE7?w=245&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                category: "culture",
+                features: ["Beaches", "Temples", "Street Food"],
+                price: "From ₹35,000"
+            },
+            {
+                name: "Dubai",
+                location: "International",
+                description: "Modern metropolis with skyscrapers, desert adventures, and luxury shopping.",
+                image: "https://www.bing.com/images/search?q=dubai+image&id=9360C322277054B5FCB880BC839C4BED2A58B459&FORM=IACFIR",
+                category: "city",
+                features: ["Skyscrapers", "Desert Safari", "Shopping"],
+                price: "From ₹55,000"
+            }
+        ];
+
+        // Render destinations
+        function renderDestinations(filteredDestinations = destinations) {
+            const grid = document.getElementById('destinations-grid');
+            grid.innerHTML = filteredDestinations.map(dest => `
+                <div class="destination-card" data-category="${dest.category}">
+                    <div class="destination-image" style="background-image: url('${dest.image}')">
+                        <div class="destination-overlay">
+                            <div class="destination-actions-overlay">
+                                <button class="btn-explore-overlay" onclick="showDestinationDetails('${dest.name}')">View Details</button>
+                                <button class="btn-book-overlay" onclick="goToBooking('${dest.name}')">Book Now</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="destination-info">
+                        <h3>${dest.name}</h3>
+                        <div class="destination-location">📍 ${dest.location}</div>
+                        <div class="destination-description">${dest.description}</div>
+                        <div class="destination-features">
+                            ${dest.features.map(feature => `<span class="feature-tag">${feature}</span>`).join('')}
+                        </div>
+                        <div class="destination-price">${dest.price}</div>
+                        <div class="destination-actions">
+                            <button class="btn-explore" onclick="showDestinationDetails('${dest.name}')">View Details</button>
+                            <button class="btn-book" onclick="goToBooking('${dest.name}')">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Show destination details in a modal
+        function showDestinationDetails(destinationName) {
+            const dest = destinations.find(d => d.name === destinationName);
+            if (!dest) return;
+
+            const modal = document.createElement('div');
+            modal.className = 'destination-modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <span class="close-modal">&times;</span>
+                    <div class="destination-detail">
+                        <div class="detail-image" style="background-image: url('${dest.image}')"></div>
+                        <div class="detail-info">
+                            <h2>${dest.name}</h2>
+                            <p class="location">📍 ${dest.location}</p>
+                            <p class="description">${dest.description}</p>
+                            <div class="features">
+                                <h4>Highlights:</h4>
+                                ${dest.features.map(feature => `<span class="feature-tag">${feature}</span>`).join('')}
+                            </div>
+                            <div class="price">${dest.price}</div>
+                            <div class="detail-actions">
+                                <button class="btn-book" onclick="goToBooking('${dest.name}')">Book This Destination</button>
+                                <button class="btn-close" onclick="closeModal()">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Close modal functionality
+            modal.querySelector('.close-modal').onclick = closeModal;
+            modal.onclick = function(e) {
+                if (e.target === modal) closeModal();
+            };
+        }
+
+        // Go to booking with destination pre-filled
+        function goToBooking(destinationName) {
+            window.location.href = `index.html#booking`;
+            // Store destination for pre-filling
+            localStorage.setItem('selectedDestination', destinationName);
+        }
+
+        // Close modal
+        function closeModal() {
+            const modal = document.querySelector('.destination-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // Filter functionality
+        document.querySelectorAll('.category-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Update active tab
+                document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                const category = tab.dataset.category;
+                const filteredDestinations = category === 'all' 
+                    ? destinations 
+                    : destinations.filter(dest => dest.category === category);
+                renderDestinations(filteredDestinations);
+            });
+        });
+
+        // Search functionality
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredDestinations = destinations.filter(dest => 
+                dest.name.toLowerCase().includes(searchTerm) ||
+                dest.location.toLowerCase().includes(searchTerm) ||
+                dest.description.toLowerCase().includes(searchTerm)
+            );
+            renderDestinations(filteredDestinations);
+        });
+
+        // Initial render
+        renderDestinations();
+    </script>
+</body>
+</html>
